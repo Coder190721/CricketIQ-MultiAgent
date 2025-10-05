@@ -1,0 +1,20 @@
+# CricketIQ - Environment Variables
+# Copy this file to .env and fill in your API keys
+
+# Google AI API Key (Required)
+GOOGLE_API_KEY=your_google_api_key_here
+
+# Optional: Custom model configuration
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_TEMPERATURE=0.7
+GEMINI_MAX_TOKENS=8192
+
+# Optional: Logging configuration
+LOG_LEVEL=INFO
+LOG_FILE=cricket_agent.log
+EVENTS_FILE=cricket_events.json
+
+# Optional: Gradio configuration
+GRADIO_SERVER_NAME=127.0.0.1
+GRADIO_SERVER_PORT=7891
+GRADIO_SHARE=False
