@@ -31,7 +31,7 @@ class CricketADKApp:
             print(f"❌ Agent initialization failed: {e}")
             self.manager = None
     
-    async def analyze_player_async(self, player_name: str, format_type: str, data_source: str = "auto") -> str:
+    async def analyze_player_async(self, player_name: str, format_type: str, mode: str = "batting", data_source: str = "auto") -> str:
         """Analyze a cricket player using the ADK system"""
         if not self.manager:
             return "❌ Cricket Manager not initialized. Please check your configuration."
@@ -40,7 +40,7 @@ class CricketADKApp:
             return "❌ Please enter a player name."
         
         try:
-            print(f"🏏 ADK: Analyzing {player_name} ({format_type})")
+            print(f"🏏 ADK: Analyzing {player_name} ({format_type}) - {mode}")
             
             # Use the manager's analyze_player method
             result = await self.manager.analyze_player(player_name, format_type)
@@ -106,8 +106,6 @@ class CricketADKApp:
             return f"📊 **Data Source**: ESPN Cricinfo (Direct) - Real-time statistics for {player_name}"
         elif data_source == "espn_via_google":
             return f"📊 **Data Source**: ESPN Cricinfo (via Google) - Real-time statistics for {player_name}"
-        elif data_source == "cricbuzz":
-            return f"📊 **Data Source**: Cricbuzz - Alternative cricket statistics for {player_name}"
         elif data_source == "wikipedia":
             return f"📊 **Data Source**: Wikipedia - General cricket information for {player_name}"
         elif data_source == "auto":
@@ -132,7 +130,6 @@ class CricketADKApp:
                     source_display = {
                         'espn_direct': '📺 ESPN Cricinfo Direct',
                         'espn_google': '🔍 ESPN via Google',
-                        'cricbuzz': '🏏 Cricbuzz',
                         'wikipedia': '📚 Wikipedia'
                     }
                     
@@ -159,7 +156,7 @@ class CricketADKApp:
             status += "\n📈 **Performance**:\n"
             status += "  - Expected success rate: 75-100%\n"
             status += "  - Analysis time: 10-15 seconds\n"
-            status += "  - Data sources: 4 (ESPN, Cricbuzz, Wikipedia, Google)\n"
+            status += "  - Data sources: 3 (ESPN, Wikipedia, Google)\n"
             
             return status
             
@@ -220,7 +217,7 @@ def create_interface():
             # Player Analysis Tab
             with gr.Tab("📊 Player Analysis"):
                 gr.Markdown("### Analyze Individual Player Statistics")
-                gr.Markdown("*Multi-agent system collects data from ESPN, Cricbuzz, Wikipedia and analyzes with AI*")
+                gr.Markdown("*Multi-agent system collects data from ESPN, Wikipedia and analyzes with AI*")
                 
                 with gr.Row():
                     with gr.Column():
@@ -230,16 +227,20 @@ def create_interface():
                             value=""
                         )
                         format_dropdown = gr.Dropdown(
-                            choices=["all", "Test", "ODI", "T20I"],
-                            value="all",
+                            choices=["Test", "ODI", "T20I", "all"],
+                            value="Test",
                             label="Format"
+                        )
+                        mode_dropdown = gr.Dropdown(
+                            choices=["batting", "bowling", "fielding"],
+                            value="batting",
+                            label="Mode"
                         )
                         data_source_dropdown = gr.Dropdown(
                             choices=[
                                 ("🔄 Auto (Multi-Agent)", "auto"),
                                 ("📊 ESPN Direct", "espn_direct"),
                                 ("🔍 ESPN via Google", "espn_via_google"),
-                                ("🏏 Cricbuzz", "cricbuzz"),
                                 ("📚 Wikipedia", "wikipedia")
                             ],
                             value="auto",
@@ -258,7 +259,7 @@ def create_interface():
                 
                 analyze_btn.click(
                     fn=app.analyze_player_async,
-                    inputs=[player_name, format_dropdown, data_source_dropdown],
+                    inputs=[player_name, format_dropdown, mode_dropdown, data_source_dropdown],
                     outputs=analysis_output
                 )
             

@@ -23,7 +23,6 @@ class CricketManager:
         self.data_sources = [
             'espn_direct',
             'espn_google', 
-            'cricbuzz',
             'wikipedia'
         ]
         self.analyzer_agent = None
@@ -35,14 +34,12 @@ class CricketManager:
             # Import sub-agent instances
             from .sub_agents.espn_direct.agent import espn_direct_agent_instance
             from .sub_agents.espn_google.agent import espn_google_agent_instance
-            from .sub_agents.cricbuzz.agent import cricbuzz_agent_instance
             from .sub_agents.wikipedia.agent import wikipedia_agent_instance
             from .sub_agents.analyzer.agent import analyzer_agent_instance
             
             self.sub_agents = {
                 'espn_direct': espn_direct_agent_instance,
                 'espn_google': espn_google_agent_instance,
-                'cricbuzz': cricbuzz_agent_instance,
                 'wikipedia': wikipedia_agent_instance
             }
             self.analyzer_agent = analyzer_agent_instance
@@ -90,11 +87,10 @@ class CricketManager:
         source_display = {
             'espn_direct': '📺 ESPN Cricinfo Direct',
             'espn_google': '🔍 ESPN via Google',
-            'cricbuzz': '🏏 Cricbuzz',
             'wikipedia': '📚 Wikipedia'
         }
         
-        for source_name in ['espn_direct', 'espn_google', 'cricbuzz', 'wikipedia']:
+        for source_name in ['espn_direct', 'espn_google', 'wikipedia']:
             if source_name in all_results:
                 result = all_results[source_name]
                 is_successful = result.get('success', False)
