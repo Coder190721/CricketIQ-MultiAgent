@@ -93,23 +93,14 @@ class ESPNDirectAgent:
                     print(f"  ❌ ESPN direct search failed: {e}")
                     continue
             
-            # If all searches fail, provide mock data as fallback
-            print(f"  ⚠️ ESPN Direct: All searches failed for {player_name}, using fallback data")
+            # If all searches fail, return failure message
+            print(f"  ❌ ESPN Direct: All searches failed for {player_name}, no data available")
             return {
-                'success': True,
-                'name': player_name,
-                'url': f"{self.base_url}/cricketers/{player_name.lower().replace(' ', '-')}",
-                'id': player_name.lower().replace(' ', '-'),
-                'data_source': 'espn_direct_fallback',
-                'format_type': format_type,
-                'timestamp': time.time(),
-                'fallback_data': True,
-                'player_info': {
-                    'name': player_name,
-                    'role': 'Batsman',
-                    'team': 'India'
-                },
-                'stats': self._get_fallback_stats(format_type)
+                'success': False,
+                'error': f'ESPN Direct source did not produce any data for {player_name}',
+                'data_source': 'espn_direct',
+                'player_name': player_name,
+                'message': f'ESPN Direct source did not produce any data for {player_name}. No player found or ESPN service unavailable.'
             }
             
         except Exception as e:
@@ -118,7 +109,8 @@ class ESPNDirectAgent:
                 'success': False,
                 'error': str(e),
                 'data_source': 'espn_direct',
-                'player_name': player_name
+                'player_name': player_name,
+                'message': f'ESPN Direct source encountered an error: {str(e)}'
             }
     
     async def get_player_stats(self, player_url: str, format_type: str) -> Dict[str, Any]:
@@ -181,78 +173,6 @@ class ESPNDirectAgent:
                 break
         
         return stats
-    
-    def _get_fallback_stats(self, format_type: str) -> Dict[str, Any]:
-        """Get fallback statistics when ESPN is unavailable"""
-        if format_type.lower() == "test":
-            return {
-                "Test": {
-                    "matches": "0",
-                    "innings": "0", 
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        elif format_type.lower() == "odi":
-            return {
-                "ODI": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0", 
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        elif format_type.lower() == "t20":
-            return {
-                "T20I": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        else:
-            return {
-                "Test": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                },
-                "ODI": {
-                    "matches": "0", 
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                },
-                "T20I": {
-                    "matches": "0",
-                    "innings": "0", 
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                }
-            }
 
 # Create the ESPN Direct agent instance
 espn_direct_agent_instance = ESPNDirectAgent()

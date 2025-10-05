@@ -73,59 +73,32 @@ class CricbuzzAgent:
                             'timestamp': time.time()
                         }
                 else:
-                    print(f"  ⚠️ Cricbuzz: No player links found, using fallback data")
+                    print(f"  ❌ Cricbuzz: No player links found")
                     return {
-                        'success': True,
-                        'name': player_name,
-                        'url': f"{self.base_url}/profiles/{player_name.lower().replace(' ', '-')}",
-                        'id': player_name.lower().replace(' ', '-'),
-                        'data_source': 'cricbuzz_fallback',
-                        'format_type': format_type,
-                        'timestamp': time.time(),
-                        'fallback_data': True,
-                        'player_info': {
-                            'name': player_name,
-                            'role': 'Batsman',
-                            'team': 'India'
-                        },
-                        'stats': self._get_fallback_stats(format_type)
+                        'success': False,
+                        'error': 'No player links found in Cricbuzz search results',
+                        'data_source': 'cricbuzz',
+                        'player_name': player_name,
+                        'message': f'Cricbuzz source did not produce any data for {player_name}. No player links found in search results.'
                     }
             else:
-                print(f"  ⚠️ Cricbuzz: Search failed with status {response.status_code}, using fallback data")
+                print(f"  ❌ Cricbuzz: Search failed with status {response.status_code}")
                 return {
-                    'success': True,
-                    'name': player_name,
-                    'url': f"{self.base_url}/profiles/{player_name.lower().replace(' ', '-')}",
-                    'id': player_name.lower().replace(' ', '-'),
-                    'data_source': 'cricbuzz_fallback',
-                    'format_type': format_type,
-                    'timestamp': time.time(),
-                    'fallback_data': True,
-                    'player_info': {
-                        'name': player_name,
-                        'role': 'Batsman',
-                        'team': 'India'
-                    },
-                    'stats': self._get_fallback_stats(format_type)
+                    'success': False,
+                    'error': f'Cricbuzz search failed with status {response.status_code}',
+                    'data_source': 'cricbuzz',
+                    'player_name': player_name,
+                    'message': f'Cricbuzz source did not produce any data for {player_name}. Search failed with status {response.status_code}.'
                 }
                 
         except Exception as e:
-            print(f"  ⚠️ Cricbuzz error: {e}, using fallback data")
+            print(f"  ❌ Cricbuzz error: {e}")
             return {
-                'success': True,
-                'name': player_name,
-                'url': f"{self.base_url}/profiles/{player_name.lower().replace(' ', '-')}",
-                'id': player_name.lower().replace(' ', '-'),
-                'data_source': 'cricbuzz_fallback',
-                'format_type': format_type,
-                'timestamp': time.time(),
-                'fallback_data': True,
-                'player_info': {
-                    'name': player_name,
-                    'role': 'Batsman',
-                    'team': 'India'
-                },
-                'stats': self._get_fallback_stats(format_type)
+                'success': False,
+                'error': str(e),
+                'data_source': 'cricbuzz',
+                'player_name': player_name,
+                'message': f'Cricbuzz source encountered an error: {str(e)}'
             }
     
     async def get_player_stats(self, player_url: str, format_type: str) -> Dict[str, Any]:
@@ -206,78 +179,6 @@ class CricbuzzAgent:
                         stats[key] = value
         
         return stats
-    
-    def _get_fallback_stats(self, format_type: str) -> Dict[str, Any]:
-        """Get fallback statistics when Cricbuzz is unavailable"""
-        if format_type.lower() == "test":
-            return {
-                "Test": {
-                    "matches": "0",
-                    "innings": "0", 
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        elif format_type.lower() == "odi":
-            return {
-                "ODI": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0", 
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        elif format_type.lower() == "t20":
-            return {
-                "T20I": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        else:
-            return {
-                "Test": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                },
-                "ODI": {
-                    "matches": "0", 
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                },
-                "T20I": {
-                    "matches": "0",
-                    "innings": "0", 
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                }
-            }
 
 # Create the Cricbuzz agent instance
 cricbuzz_agent_instance = CricbuzzAgent()

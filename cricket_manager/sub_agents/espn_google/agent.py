@@ -78,7 +78,8 @@ class ESPNGoogleAgent:
                         'success': False,
                         'error': 'No ESPN Cricinfo links found in Google search results',
                         'data_source': 'espn_via_google',
-                        'player_name': player_name
+                        'player_name': player_name,
+                        'message': f'ESPN Google source did not produce any data for {player_name}. No ESPN Cricinfo links found in Google search results.'
                     }
             else:
                 print(f"  ❌ ESPN Google: Google search failed with status {response.status_code}")
@@ -86,26 +87,18 @@ class ESPNGoogleAgent:
                     'success': False,
                     'error': f'Google search failed with status {response.status_code}',
                     'data_source': 'espn_via_google',
-                    'player_name': player_name
+                    'player_name': player_name,
+                    'message': f'ESPN Google source did not produce any data for {player_name}. Google search failed with status {response.status_code}.'
                 }
                 
         except Exception as e:
-            print(f"  ⚠️ ESPN Google error: {e}, using fallback data")
+            print(f"  ❌ ESPN Google error: {e}")
             return {
-                'success': True,
-                'name': player_name,
-                'url': f"{self.base_url}/cricketers/{player_name.lower().replace(' ', '-')}",
-                'id': player_name.lower().replace(' ', '-'),
-                'data_source': 'espn_google_fallback',
-                'format_type': format_type,
-                'timestamp': time.time(),
-                'fallback_data': True,
-                'player_info': {
-                    'name': player_name,
-                    'role': 'Batsman',
-                    'team': 'India'
-                },
-                'stats': self._get_fallback_stats(format_type)
+                'success': False,
+                'error': str(e),
+                'data_source': 'espn_via_google',
+                'player_name': player_name,
+                'message': f'ESPN Google source encountered an error: {str(e)}'
             }
     
     async def get_player_stats(self, player_url: str, format_type: str) -> Dict[str, Any]:
@@ -171,78 +164,6 @@ class ESPNGoogleAgent:
                         stats[key] = value
         
         return stats
-    
-    def _get_fallback_stats(self, format_type: str) -> Dict[str, Any]:
-        """Get fallback statistics when ESPN Google is unavailable"""
-        if format_type.lower() == "test":
-            return {
-                "Test": {
-                    "matches": "0",
-                    "innings": "0", 
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        elif format_type.lower() == "odi":
-            return {
-                "ODI": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0", 
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        elif format_type.lower() == "t20":
-            return {
-                "T20I": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0",
-                    "fifties": "0"
-                }
-            }
-        else:
-            return {
-                "Test": {
-                    "matches": "0",
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                },
-                "ODI": {
-                    "matches": "0", 
-                    "innings": "0",
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                },
-                "T20I": {
-                    "matches": "0",
-                    "innings": "0", 
-                    "runs": "0",
-                    "highest": "0",
-                    "average": "0.00",
-                    "strike_rate": "0.00",
-                    "centuries": "0"
-                }
-            }
 
 # Create the ESPN Google agent instance
 espn_google_agent_instance = ESPNGoogleAgent()
