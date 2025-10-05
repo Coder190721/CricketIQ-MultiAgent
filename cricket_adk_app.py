@@ -43,7 +43,7 @@ class CricketADKApp:
             print(f"🏏 ADK: Analyzing {player_name} ({format_type}) - {mode}")
             
             # Use the manager's analyze_player method
-            result = await self.manager.analyze_player(player_name, format_type)
+            result = await self.manager.analyze_player(player_name, format_type, mode)
             
             # Add data source information if specified
             if data_source != "auto":
@@ -55,7 +55,7 @@ class CricketADKApp:
         except Exception as e:
             return f"❌ Error analyzing player: {str(e)}"
     
-    async def compare_players_async(self, player1: str, player2: str, format_type: str, data_source: str = "auto") -> str:
+    async def compare_players_async(self, player1: str, player2: str, format_type: str, mode: str = "batting", data_source: str = "auto") -> str:
         """Compare two players using the ADK system"""
         if not self.manager:
             return "❌ Cricket Manager not initialized. Please check your configuration."
@@ -64,10 +64,10 @@ class CricketADKApp:
             return "❌ Please enter both player names."
         
         try:
-            print(f"⚖️ ADK: Comparing {player1} vs {player2} ({format_type})")
+            print(f"⚖️ ADK: Comparing {player1} vs {player2} ({format_type}) - {mode}")
             
             # Use the manager's compare_players method
-            result = await self.manager.compare_players(player1, player2, format_type)
+            result = await self.manager.compare_players(player1, player2, format_type, mode)
             
             # Add data source information if specified
             if data_source != "auto":
@@ -79,23 +79,20 @@ class CricketADKApp:
         except Exception as e:
             return f"❌ Error comparing players: {str(e)}"
     
-    async def get_insights_async(self, query: str) -> str:
+    async def get_cricket_insights_async(self, query: str) -> str:
         """Get cricket insights using the ADK system"""
         if not self.manager:
             return "❌ Cricket Manager not initialized. Please check your configuration."
         
         if not query.strip():
-            return "❌ Please enter a cricket question or query."
+            return "❌ Please enter a cricket question."
         
         try:
             print(f"💡 ADK: Getting insights for: {query}")
             
             # Use the analyzer agent for insights
-            if hasattr(self.manager, 'analyzer_agent') and self.manager.analyzer_agent:
-                result = await self.manager.analyzer_agent.get_cricket_insights(query)
-                return result
-            else:
-                return "❌ Analyzer agent not available for insights."
+            result = await self.manager.analyzer_agent.get_cricket_insights(query)
+            return result
             
         except Exception as e:
             return f"❌ Error getting insights: {str(e)}"
@@ -108,55 +105,52 @@ class CricketADKApp:
             return f"📊 **Data Source**: ESPN Cricinfo (via Google) - Real-time statistics for {player_name}"
         elif data_source == "wikipedia":
             return f"📊 **Data Source**: Wikipedia - General cricket information for {player_name}"
+        elif data_source == "google_search":
+            return f"🔍 **Data Source**: Google Search - Comprehensive search results for {player_name}"
         elif data_source == "auto":
             return f"🔄 **Data Source**: Multi-Agent System - Using all available sources for {player_name}"
         else:
             return f"📊 **Data Source**: {data_source.title()} - Statistics for {player_name}"
     
     def get_system_status(self) -> str:
-        """Get system status and agent information"""
+        """Get current system status"""
         try:
-            status = "🤖 **Cricket ADK Multi-Agent System Status**\n\n"
+            if not self.manager:
+                return "❌ Cricket Manager not initialized"
             
-            # Check manager status
-            if self.manager:
-                status += "✅ **Cricket Manager**: Active\n"
-                
-                # Check sub-agents with detailed status
-                if hasattr(self.manager, 'sub_agents'):
-                    status += f"\n📊 **Data Source Agents**: {len(self.manager.sub_agents)} active\n"
-                    
-                    # Define source display names and emojis
-                    source_display = {
-                        'espn_direct': '📺 ESPN Cricinfo Direct',
-                        'espn_google': '🔍 ESPN via Google',
-                        'wikipedia': '📚 Wikipedia'
-                    }
-                    
-                    for source, agent in self.manager.sub_agents.items():
-                        display_name = source_display.get(source, source.replace('_', ' ').title())
-                        status += f"  - {display_name}: ✅ Ready\n"
-                
-                # Check analyzer agent
-                if hasattr(self.manager, 'analyzer_agent') and self.manager.analyzer_agent:
-                    status += "\n🧠 **Analyzer Agent**: ✅ Active (Gemini AI)\n"
-                else:
-                    status += "\n🧠 **Analyzer Agent**: ❌ Not available\n"
-            else:
-                status += "❌ **Cricket Manager**: Not initialized\n"
-            
-            status += "\n🌐 **System Features**:\n"
-            status += "  - Multi-agent data collection\n"
-            status += "  - AI-powered analysis with Gemini\n"
-            status += "  - Multiple data source integration\n"
-            status += "  - Real-time cricket statistics\n"
-            status += "  - Fallback data mechanisms\n"
+            status = "🤖 **CricketIQ Multi-Agent System Status**\n\n"
+            status += "📊 **System Overview**:\n"
+            status += "  - Multi-agent cricket statistics system\n"
+            status += "  - Real-time data collection from multiple sources\n"
+            status += "  - AI-powered analysis using Google Gemini\n"
+            status += "  - Mode-specific analysis (batting, bowling, fielding)\n"
             status += "  - Data source status reporting\n"
             
             status += "\n📈 **Performance**:\n"
             status += "  - Expected success rate: 75-100%\n"
             status += "  - Analysis time: 10-15 seconds\n"
-            status += "  - Data sources: 3 (ESPN, Wikipedia, Google)\n"
+            status += "  - Data sources: 4 (ESPN, Wikipedia, Google Search)\n"
+            
+            status += "\n🔧 **Active Agents**:\n"
+            if self.manager.sub_agents:
+                # Define source display names and emojis
+                source_display = {
+                    'espn_direct': '📺 ESPN Cricinfo Direct',
+                    'espn_google': '🔍 ESPN via Google',
+                    'wikipedia': '📚 Wikipedia',
+                    'google_search': '🔍 Google Search'
+                }
+                
+                for source, agent in self.manager.sub_agents.items():
+                    display_name = source_display.get(source, source.replace('_', ' ').title())
+                    status += f"  - {display_name}: ✅ Ready\n"
+            
+            status += "\n🎯 **Features**:\n"
+            status += "  - Player analysis with mode-specific focus\n"
+            status += "  - Player comparison across formats\n"
+            status += "  - Cricket insights and general knowledge\n"
+            status += "  - Real-time data source monitoring\n"
+            status += "  - Fallback data mechanisms\n"
             
             return status
             
@@ -165,50 +159,35 @@ class CricketADKApp:
 
 def create_interface():
     """Create the Gradio interface for the ADK system"""
-    print("🔧 Creating ADK Cricket Interface...")
+    app = CricketADKApp()
     
-    try:
-        app = CricketADKApp()
-        print("✅ ADK Cricket App created successfully")
-    except Exception as e:
-        print(f"❌ Error creating ADK Cricket App: {e}")
-        import traceback
-        traceback.print_exc()
-        raise
-    
-    # Custom CSS for better styling
-    css = """
-    .gradio-container {
-        max-width: 1200px !important;
-        margin: auto !important;
-    }
-    .cricket-header {
-        text-align: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-    .adk-badge {
-        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 12px;
-        font-weight: bold;
-    }
-    """
-    
-    with gr.Blocks(css=css, title="🏏 Cricket ADK Multi-Agent System") as interface:
+    with gr.Blocks(
+        title="🏏 CricketIQ Multi-Agent System",
+        theme=gr.themes.Soft(),
+        css="""
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .status-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        """
+    ) as interface:
         
-        # Header
         gr.HTML("""
-        <div class="cricket-header">
-            <h1>🏏 Cricket ADK Multi-Agent System</h1>
-            <p>Powered by Google ADK Framework & Multi-Agent Architecture</p>
-            <p>Intelligent cricket statistics with AI-powered analysis</p>
-            <span class="adk-badge">ADK Framework</span>
+        <div class="header">
+            <h1>🏏 CricketIQ Multi-Agent System</h1>
+            <p>Powered by Google ADK & Multiple Data Sources</p>
+            <p>Advanced cricket statistics with AI-powered analysis</p>
         </div>
         """)
         
@@ -217,7 +196,7 @@ def create_interface():
             # Player Analysis Tab
             with gr.Tab("📊 Player Analysis"):
                 gr.Markdown("### Analyze Individual Player Statistics")
-                gr.Markdown("*Multi-agent system collects data from ESPN, Wikipedia and analyzes with AI*")
+                gr.Markdown("*Multi-agent system collects data from ESPN, Wikipedia, Google Search and analyzes with AI*")
                 
                 with gr.Row():
                     with gr.Column():
@@ -241,7 +220,8 @@ def create_interface():
                                 ("🔄 Auto (Multi-Agent)", "auto"),
                                 ("📊 ESPN Direct", "espn_direct"),
                                 ("🔍 ESPN via Google", "espn_via_google"),
-                                ("📚 Wikipedia", "wikipedia")
+                                ("📚 Wikipedia", "wikipedia"),
+                                ("🔍 Google Search", "google_search")
                             ],
                             value="auto",
                             label="Data Source",
@@ -272,30 +252,34 @@ def create_interface():
                     with gr.Column():
                         player1_name = gr.Textbox(
                             label="Player 1",
-                            placeholder="e.g., Sachin Tendulkar",
+                            placeholder="e.g., Virat Kohli",
                             value=""
                         )
                         player2_name = gr.Textbox(
                             label="Player 2", 
-                            placeholder="e.g., Brian Lara",
+                            placeholder="e.g., Sachin Tendulkar",
                             value=""
                         )
                         compare_format = gr.Dropdown(
-                            choices=["all", "Test", "ODI", "T20I"],
-                            value="all",
+                            choices=["Test", "ODI", "T20I", "all"],
+                            value="Test",
                             label="Format"
                         )
-                        compare_data_source_dropdown = gr.Dropdown(
+                        compare_mode = gr.Dropdown(
+                            choices=["batting", "bowling", "fielding"],
+                            value="batting",
+                            label="Mode"
+                        )
+                        compare_data_source = gr.Dropdown(
                             choices=[
                                 ("🔄 Auto (Multi-Agent)", "auto"),
                                 ("📊 ESPN Direct", "espn_direct"),
                                 ("🔍 ESPN via Google", "espn_via_google"),
-                                ("🏏 Cricbuzz", "cricbuzz"),
-                                ("📚 Wikipedia", "wikipedia")
+                                ("📚 Wikipedia", "wikipedia"),
+                                ("🔍 Google Search", "google_search")
                             ],
                             value="auto",
-                            label="Data Source",
-                            info="Choose which data source to use for comparison"
+                            label="Data Source"
                         )
                         compare_btn = gr.Button("⚖️ Compare Players", variant="primary")
                     
@@ -309,19 +293,19 @@ def create_interface():
                 
                 compare_btn.click(
                     fn=app.compare_players_async,
-                    inputs=[player1_name, player2_name, compare_format, compare_data_source_dropdown],
+                    inputs=[player1_name, player2_name, compare_format, compare_mode, compare_data_source],
                     outputs=comparison_output
                 )
             
             # Cricket Insights Tab
             with gr.Tab("💡 Cricket Insights"):
                 gr.Markdown("### Get Cricket Insights and Analysis")
-                gr.Markdown("*AI-powered cricket knowledge and insights*")
+                gr.Markdown("*Ask questions about cricket history, records, and general knowledge*")
                 
                 with gr.Row():
                     with gr.Column():
                         insights_query = gr.Textbox(
-                            label="Cricket Question or Topic",
+                            label="Your Cricket Question",
                             placeholder="e.g., Who are the best all-rounders in T20 cricket?",
                             lines=3
                         )
@@ -336,7 +320,7 @@ def create_interface():
                         )
                 
                 insights_btn.click(
-                    fn=app.get_insights_async,
+                    fn=app.get_cricket_insights_async,
                     inputs=[insights_query],
                     outputs=insights_output
                 )
@@ -344,99 +328,76 @@ def create_interface():
             # System Status Tab
             with gr.Tab("🤖 System Status"):
                 gr.Markdown("### Multi-Agent System Status")
+                gr.Markdown("*Real-time monitoring of all agents and data sources*")
                 
                 with gr.Row():
                     with gr.Column():
                         status_btn = gr.Button("🔄 Refresh Status", variant="secondary")
-                        system_status = gr.Textbox(
+                        status_output = gr.Textbox(
                             label="System Status",
-                            lines=15,
-                            max_lines=20,
-                            show_copy_button=True,
-                            interactive=False
+                            lines=20,
+                            max_lines=25,
+                            show_copy_button=True
                         )
                     
                     with gr.Column():
                         gr.Markdown("""
-                        #### 🤖 Multi-Agent Architecture:
-                        - **Cricket Manager**: Root agent coordinating all operations
-                        - **ESPN Direct Agent**: Direct ESPN Cricinfo data collection
-                        - **ESPN Google Agent**: ESPN data via Google search
-                        - **Cricbuzz Agent**: Alternative cricket statistics
-                        - **Wikipedia Agent**: General cricket information
-                        - **Analyzer Agent**: AI analysis using Gemini
+                        ### 🎯 System Features
                         
-                        #### 🔄 Data Flow:
-                        1. Manager receives request
-                        2. Coordinates data collection from all sources
-                        3. Aggregates successful results
-                        4. Sends to Analyzer for AI analysis
-                        5. Returns comprehensive results
+                        **📊 Player Analysis**
+                        - Mode-specific analysis (batting, bowling, fielding)
+                        - Format-specific statistics (Test, ODI, T20I)
+                        - Multi-source data collection
+                        - AI-powered insights
+                        
+                        **⚖️ Player Comparison**
+                        - Head-to-head statistical comparison
+                        - Mode-specific comparisons
+                        - Cross-format analysis
+                        - AI-powered assessment
+                        
+                        **💡 Cricket Insights**
+                        - General cricket knowledge
+                        - Historical analysis
+                        - Record analysis
+                        - Predictive insights
+                        
+                        **🔧 Multi-Agent Architecture**
+                        - ESPN Cricinfo Direct Agent
+                        - ESPN via Google Agent
+                        - Wikipedia Agent
+                        - Google Search Agent
+                        - AI Analyzer Agent
                         """)
                 
                 status_btn.click(
                     fn=app.get_system_status,
-                    outputs=system_status
+                    outputs=status_output
+                )
+                
+                # Auto-refresh status on load
+                interface.load(
+                    fn=app.get_system_status,
+                    outputs=status_output
                 )
     
     return interface
 
 def main():
-    """Main function to run the ADK Cricket app"""
-    print("🚀 Starting Cricket ADK Multi-Agent System...")
-    print("=" * 60)
-    
-    # Check for required environment variables
-    print("🔍 Checking environment variables...")
-    if not os.getenv('GOOGLE_API_KEY'):
-        print("❌ Error: GOOGLE_API_KEY environment variable is required")
-        print("Please set your Google API key: export GOOGLE_API_KEY='your-api-key'")
-        return
-    print("✅ GOOGLE_API_KEY found")
+    """Main function to run the Gradio app"""
+    print("🚀 Starting CricketIQ Multi-Agent System...")
     
     # Create and launch the interface
-    print("🔧 Creating ADK interface...")
-    try:
-        interface = create_interface()
-        print("✅ ADK Interface created successfully")
-    except Exception as e:
-        print(f"❌ Error creating ADK interface: {e}")
-        import traceback
-        traceback.print_exc()
-        return
+    interface = create_interface()
     
-    print("\n🌐 ADK Multi-Agent Cricket System")
-    print("=" * 60)
-    print("📊 Features Available:")
-    print("  • Multi-agent data collection")
-    print("  • AI-powered analysis with Gemini")
-    print("  • Multiple data source integration")
-    print("  • Real-time cricket statistics")
-    print("  • Intelligent player comparisons")
-    print("\n🌐 Web Interface:")
-    print("  URL: http://localhost:7892")
-    print("  URL: http://127.0.0.1:7892")
-    print("\n💡 Tips:")
-    print("  • Use 'Auto' data source for best results")
-    print("  • Multi-agent system provides comprehensive analysis")
-    print("  • Check 'System Status' tab for agent information")
-    print("  • Use Ctrl+C to stop the server")
-    print("=" * 60)
-    print("🖥️ Starting ADK server...")
-    
-    print("🖥️ Launching ADK interface...")
-    try:
-        interface.launch(
-            server_name="127.0.0.1",
-            server_port=7892,
-            share=False,
-            inbrowser=False,
-            quiet=False
-        )
-    except Exception as e:
-        print(f"❌ Error launching ADK interface: {e}")
-        import traceback
-        traceback.print_exc()
+    # Launch the app
+    interface.launch(
+        server_name="0.0.0.0",
+        server_port=7892,
+        share=False,
+        show_error=True,
+        quiet=False
+    )
 
 if __name__ == "__main__":
     main()

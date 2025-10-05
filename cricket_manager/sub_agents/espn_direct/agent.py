@@ -183,74 +183,74 @@ class ESPNDirectAgent:
         return stats
     
     def _get_fallback_stats(self, format_type: str) -> Dict[str, Any]:
-        """Get realistic fallback statistics when ESPN is unavailable"""
+        """Get fallback statistics when ESPN is unavailable"""
         if format_type.lower() == "test":
             return {
                 "Test": {
-                    "matches": "113",
-                    "innings": "191", 
-                    "runs": "8848",
-                    "highest": "254*",
-                    "average": "49.15",
-                    "strike_rate": "55.23",
-                    "centuries": "29",
-                    "fifties": "30"
+                    "matches": "0",
+                    "innings": "0", 
+                    "runs": "0",
+                    "highest": "0",
+                    "average": "0.00",
+                    "strike_rate": "0.00",
+                    "centuries": "0",
+                    "fifties": "0"
                 }
             }
         elif format_type.lower() == "odi":
             return {
                 "ODI": {
-                    "matches": "292",
-                    "innings": "280",
-                    "runs": "13848", 
-                    "highest": "183",
-                    "average": "58.67",
-                    "strike_rate": "93.17",
-                    "centuries": "50",
-                    "fifties": "72"
+                    "matches": "0",
+                    "innings": "0",
+                    "runs": "0", 
+                    "highest": "0",
+                    "average": "0.00",
+                    "strike_rate": "0.00",
+                    "centuries": "0",
+                    "fifties": "0"
                 }
             }
         elif format_type.lower() == "t20":
             return {
                 "T20I": {
-                    "matches": "115",
-                    "innings": "109",
-                    "runs": "4008",
-                    "highest": "122*",
-                    "average": "52.73",
-                    "strike_rate": "137.96",
-                    "centuries": "1",
-                    "fifties": "37"
+                    "matches": "0",
+                    "innings": "0",
+                    "runs": "0",
+                    "highest": "0",
+                    "average": "0.00",
+                    "strike_rate": "0.00",
+                    "centuries": "0",
+                    "fifties": "0"
                 }
             }
         else:
             return {
                 "Test": {
-                    "matches": "113",
-                    "innings": "191",
-                    "runs": "8848",
-                    "highest": "254*",
-                    "average": "49.15",
-                    "strike_rate": "55.23",
-                    "centuries": "29"
+                    "matches": "0",
+                    "innings": "0",
+                    "runs": "0",
+                    "highest": "0",
+                    "average": "0.00",
+                    "strike_rate": "0.00",
+                    "centuries": "0"
                 },
                 "ODI": {
-                    "matches": "292", 
-                    "innings": "280",
-                    "runs": "13848",
-                    "highest": "183",
-                    "average": "58.67",
-                    "strike_rate": "93.17",
-                    "centuries": "50"
+                    "matches": "0", 
+                    "innings": "0",
+                    "runs": "0",
+                    "highest": "0",
+                    "average": "0.00",
+                    "strike_rate": "0.00",
+                    "centuries": "0"
                 },
                 "T20I": {
-                    "matches": "115",
-                    "innings": "109", 
-                    "runs": "4008",
-                    "highest": "122*",
-                    "average": "52.73",
-                    "strike_rate": "137.96",
-                    "centuries": "1"
+                    "matches": "0",
+                    "innings": "0", 
+                    "runs": "0",
+                    "highest": "0",
+                    "average": "0.00",
+                    "strike_rate": "0.00",
+                    "centuries": "0"
                 }
             }
 
